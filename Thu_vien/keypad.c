@@ -1,22 +1,24 @@
 #include "keypad.h"
-// M?ng luu gi� tr? c?a c�c h�ng v� c?t
+// M?ng luu giá tr? c?a các hàng và c?t
 GPIO_TypeDef *row_ports[NUM_ROWS] = {GPIOA, GPIOA, GPIOA, GPIOA};
 GPIO_TypeDef *col_ports[NUM_COLS] = {GPIOB, GPIOB, GPIOB};
 
 uint16_t row_pins[NUM_ROWS] = {ROW_1_PIN, ROW_2_PIN, ROW_3_PIN, ROW_4_PIN};
 uint16_t col_pins[NUM_COLS] = {COL_1_PIN, COL_2_PIN, COL_3_PIN};
 
-// M?ng luu gi� tr? c?a c�c n�t
-uint16_t keys[NUM_ROWS][NUM_COLS] = {
-    {1, 2, 3},
-    {4, 5, 6},
-    {7, 8, 9},
-    {10, 0, 11},
+// M?ng luu giá tr? c?a các nút
+char keys[NUM_ROWS][NUM_COLS] = {
+    {'1', '2', '3'},
+    {'4', '5', '6'},
+    {'7', '8', '9'},
+    {'*', '0', '#'},
 };
 
-uint16_t Keypad_Scan(void) {
-    static uint16_t previousKey = 0;
-    uint16_t key = 0;
+char Keypad_Scan(void) { // Thay d?i ki?u tr? v? thành char
+    static char previousKey = 0; // Thay d?i ki?u bi?n thành char
+    static char currentKey = 0; // Thay d?i ki?u bi?n thành char
+    static uint8_t count = 0; // Bi?n d?m s? l?n g?i hàm SysTick_Handler
+    char key = 0; // Thay d?i ki?u bi?n thành char
 
     for (int col = 0; col < NUM_COLS; col++) {
         HAL_GPIO_WritePin(col_ports[col], col_pins[col], GPIO_PIN_RESET);
@@ -35,9 +37,20 @@ uint16_t Keypad_Scan(void) {
     if (key == 0) {
         key = previousKey;
     } else {
-        previousKey = key; // Luu l?i gi� tr? n�t m?i
+        currentKey = key; // Luu l?i giá tr? nút m?i
+        count++; // Tang bi?n d?m lên 1
+        if (count == 2) { // N?u dã g?i hàm SysTick_Handler hai l?n
+            if (currentKey == previousKey) { // N?u giá tr? nút m?i b?ng giá tr? nút cu
+                key = currentKey; // Xác nh?n nút du?c nh?n
+            } else { // N?u không b?ng nhau
+                key = 0; // B? qua nút du?c nh?n
+            }
+            count = 0; // Ð?t l?i bi?n d?m v? 0
+        } else { // N?u chua g?i hàm SysTick_Handler hai l?n
+            key = 0; // B? qua nút du?c nh?n
+        }
+        previousKey = currentKey; // C?p nh?t giá tr? nút cu
     }
 
     return key;
 }
-
