@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h> 
+#include <stdio.h>
 #include "led7seg.h"
 #include "EOS.h"
 #include "keypad.h"
@@ -30,13 +31,29 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 int x=0;
-int h=0;
-int m=0;
-int s=0;
+int hours=0;
+int minutes =0;
+int seconds=0;
 char read_key[3];
 int doi_key = 0;
 int count;
 static int val_key;
+
+bool unit_seconds_adjust;
+bool dozen_seconds_adjust;
+bool unit_minutes_adjust;
+bool dozen_minutes_adjust;
+bool unit_hours_adjust;
+bool dozen_hours_adjust;
+
+int mode;
+
+int unit_seconds;
+int dozen_seconds;
+int unit_minutes;
+int dozen_minutes;
+int unit_hours;
+int dozen_hours;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -48,46 +65,28 @@ static int val_key;
 void print_time(void){
 	x++;
 	if(x==100){
-	s++;
+	seconds++;
 	x=0;
 	}
-	if(s==60){
-	m++;
-	s=0;
+	if(seconds==60){
+	minutes++;
+	seconds=0;
 	}
-	if(m==60){
-	h++;
-	m=0;
+	if(minutes==60){
+	hours++;
+	minutes=0;
 	}
-	if(h==24){
-	h=0;
-	m=0;
-	s=0;
+	if(hours==24){
+	hours=0;
+	minutes=0;
+	seconds=0;
 	}
-	scanLED_time(1,h,m,s);
+	seconds=dozen_seconds+unit_seconds;
+	minutes=dozen_minutes+ unit_minutes;
+	hours=dozen_hours+unit_hours;
+	scanLED_time(1,hours,minutes,seconds);
 }
 
-void reset_time(int ho,int mi, int se){
-	x++;
-	if(x==100){
-	se++;
-	x=0;
-	}
-	if(se==60){
-	mi++;
-	se=0;
-	}
-	if(mi==60){
-	ho++;
-	mi=0;
-	}
-	if(ho==24){
-	ho=0;
-	mi=0;
-	se=0;
-	}
-	scanLED_time(1,ho,mi,se);
-}
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -172,10 +171,123 @@ void SysTick_Handler(void)
     if (read_key[0] == read_key[1]){val_key=read_key[1];}
     count = 0;
   }
-	// b?t d?u d?m th?i gian
-	if(val_key=='1'){	print_time();	}
-	// set th?i gian l?i thành 0
-	if(val_key=='0'){	reset_time(00,00,00);	}
+	if(val_key=='0'){	scanLED_time(1,00,00,00);	hours=0; minutes =0; seconds=0; }
+
+
+	  if (val_key == '1')
+    {
+      dozen_hours_adjust = true;
+    }
+    if (dozen_hours_adjust)
+    {
+      if (val_key !=0&&val_key!='#')
+      {
+				minutes = minutes;
+				dozen_hours=(val_key-48)*10;
+				hours = dozen_hours+unit_hours;
+				seconds = seconds;
+				print_time();
+      }
+      if(val_key == '#'){
+			dozen_hours_adjust=false;
+			}
+    }
+  if (val_key == '2')
+    {
+      unit_hours_adjust = true;
+    }
+    if (unit_hours_adjust)
+    {
+      if (val_key !=0&&val_key!='#')
+      {
+				minutes = minutes;
+				unit_hours=val_key-48;
+				hours = unit_hours + dozen_hours;
+				seconds = seconds;
+				print_time();
+      }
+      if(val_key == '#'){
+			unit_hours_adjust=false;
+			}
+    }	
+	 
+	
+	  if (val_key == '3')
+    {
+      dozen_minutes_adjust = true;
+    }
+    if (dozen_minutes_adjust)
+    {
+      if (val_key !=0&&val_key!='#')
+      {
+				hours = hours;
+				dozen_minutes=(val_key-48)*10;
+				minutes = dozen_minutes+unit_minutes;
+				seconds = seconds;
+				print_time();
+      }
+      if(val_key == '#'){
+			dozen_minutes_adjust=false;
+			}
+    }
+  if (val_key == '4')
+    {
+      unit_minutes_adjust = true;
+    }
+    if (unit_minutes_adjust)
+    {
+      if (val_key !=0&&val_key!='#')
+      {
+				hours = hours;
+				unit_minutes=val_key-48;
+				minutes = unit_minutes + dozen_minutes;
+				seconds = seconds;
+				print_time();
+      }
+      if(val_key == '#'){
+			unit_minutes_adjust=false;
+			}
+    }
+		
+		 if (val_key == '5')
+    {
+      dozen_seconds_adjust = true;
+    }
+    if (dozen_seconds_adjust)
+    {
+      if (val_key !=0&&val_key!='#')
+      {
+				hours = hours;
+				dozen_seconds=(val_key-48)*10;
+				seconds = dozen_seconds+unit_seconds;
+				minutes = minutes;
+				print_time();
+      }
+      if(val_key == '#'){
+			dozen_seconds_adjust=false;
+			}
+    }
+  if (val_key == '6')
+    {
+      unit_seconds_adjust = true;
+    }
+    if (unit_seconds_adjust)
+    {
+      if (val_key !=0&&val_key!='#')
+      {
+				hours = hours;
+				unit_seconds=val_key-48;
+				seconds = unit_seconds + dozen_seconds;
+				minutes = minutes;
+				print_time();
+      }
+      if(val_key == '#'){
+			unit_seconds_adjust=false;
+			}
+    }
+		
+		print_time();
+	
 	
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
