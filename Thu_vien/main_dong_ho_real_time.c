@@ -33,9 +33,10 @@ int x=0;
 int h=0;
 int m=0;
 int s=0;
-int read_key1=0;
+char read_key[3];
 int doi_key = 0;
-int read_key2=0;
+int count;
+static int val_key;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -63,10 +64,10 @@ void print_time(void){
 	m=0;
 	s=0;
 	}
-	scanLED(1,h,m,s);
+	scanLED_time(1,h,m,s);
 }
 
-void ctrl_time(int ho,int mi, int se){
+void reset_time(int ho,int mi, int se){
 	x++;
 	if(x==100){
 	se++;
@@ -85,7 +86,7 @@ void ctrl_time(int ho,int mi, int se){
 	mi=0;
 	se=0;
 	}
-	scanLED(1,ho,mi,se);
+	scanLED_time(1,ho,mi,se);
 }
 /* USER CODE END PM */
 
@@ -162,14 +163,19 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   //HAL_IncTick();
 
-	if(Keypad_Scan()){
-		doi_key++;
-		read_key1 = Keypad_Scan();
-	}
-	if(doi_key>0&&read_key1==Keypad_Scan()){
-	doi_key=0;
-	print_time();
-	}
+	read_key[count]=Keypad_Scan();
+	if(read_key[count]!=0){
+		count++;
+  }
+  if (count == 2)
+  {
+    if (read_key[0] == read_key[1]){val_key=read_key[1];}
+    count = 0;
+  }
+	// b?t d?u d?m th?i gian
+	if(val_key=='1'){	print_time();	}
+	// set th?i gian l?i thành 0
+	if(val_key=='0'){	reset_time(00,00,00);	}
 	
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
