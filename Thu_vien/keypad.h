@@ -14,13 +14,13 @@
 #define COL_2_PIN GPIO_PIN_5
 #define COL_3_PIN GPIO_PIN_6
 
-#define DEBOUNCE_DELAY_MS 500 // Th?i gian debounce (50ms, b?n có th? di?u ch?nh)
+#define DEBOUNCE_DELAY_MS 500 // Th?i gian debounce (50ms, b?n cÃ³ th? di?u ch?nh)
 
 extern GPIO_TypeDef *row_ports[NUM_ROWS];
 extern GPIO_TypeDef *col_ports[NUM_COLS];
 extern uint16_t row_pins[NUM_ROWS];
 extern uint16_t col_pins[NUM_COLS];
-extern uint16_t keys[NUM_ROWS][NUM_COLS];
-extern uint16_t Keypad_Scan(void);
+extern char keys[NUM_ROWS][NUM_COLS];
+extern char Keypad_Scan(void);
 
 #endif
