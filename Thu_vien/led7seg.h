@@ -12,5 +12,6 @@ extern GPIO_TypeDef* ledPorts_data[];
 void print_led(int num);
 //void scanLED(int time_loop,int num);
 void set_time(int h,int m, int s);
-void scanLED(int time_loop,int h,int m, int s);
+void scanLED_time(int time_loop,int h,int m, int s);
+void scanLED_num(int time_loop,int num);
 #endif
