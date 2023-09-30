@@ -31,7 +31,7 @@ void set_time(int h,int m, int s) {
     buff[5] = s % 10; 
 }
 
-void scanLED(int time_loop,int h,int m, int s) {
+void scanLED_time(int time_loop,int h,int m, int s) {
 	set_time( h, m, s);
     for (int dl = 0; dl < time_loop; dl++) {
         for (int ledIndex = 0; ledIndex < 6; ledIndex++) {
@@ -44,6 +44,18 @@ void scanLED(int time_loop,int h,int m, int s) {
     }
 }
 
+void scanLED_num(int time_loop,int num) {
+	print_led(num);
+    for (int dl = 0; dl < time_loop; dl++) {
+        for (int ledIndex = 0; ledIndex < 6; ledIndex++) {
+            ledPorts_data[ledIndex]->ODR &= ~(0xFF); 
+            ledPorts_data[ledIndex]->ODR |= digitHex_Anode[buff[ledIndex]]; 
+            ledPorts[ledIndex]->ODR |= ledPins[ledIndex]; 
+            for(int on_led=0;on_led<1000;on_led++){} 
+            ledPorts[ledIndex]->ODR &= ~ledPins[ledIndex]; 
+        }
+    }
+}
 
 
 
